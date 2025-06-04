@@ -1,10 +1,10 @@
-export enum TIMER {
+export enum Timer {
   isRunning = 'Running',
   isPaused = 'Paused',
   isStopped = 'Stopped',
 }
 
-export enum OPTION_TYPE {
+export enum OptionType {
   isFocusOn = 'focus-on',
   isShortBreak = 'short-break',
   isLongBreak = 'long-break',
@@ -31,8 +31,8 @@ export interface GLOBAL_CONFIG {
   totalDuration: number,
   remainingDuration: number,
   states: {
-    currentTimerStatus: TIMER,
-    currentOptionType: OPTION_TYPE,
+    currentTimerStatus: Timer,
+    currentOptionType: OptionType,
   },
   timerInterval: number | undefined,
   currentSelected: HTMLButtonElement,

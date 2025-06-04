@@ -1,4 +1,4 @@
-import { getRequiredElement, isElementOfType, OPTION_TYPE, TIMER, type GLOBAL_CONFIG, type QuotesArray, type USER_INPUT } from "./utility/Utility";
+import { getRequiredElement, isElementOfType, OptionType, Timer, type GLOBAL_CONFIG, type QuotesArray, type USER_INPUT } from "./utility/Utility";
 
 export default function initApp() {
   try {
@@ -34,8 +34,8 @@ export default function initApp() {
       totalDuration: 0,
       remainingDuration: 0,
       states: {
-        currentTimerStatus: TIMER.isStopped,
-        currentOptionType: OPTION_TYPE.isFocusOn,
+        currentTimerStatus: Timer.isStopped,
+        currentOptionType: OptionType.isFocusOn,
       },
       timerInterval: undefined,
       currentSelected: getRequiredElement<HTMLButtonElement>("button[data-selected='true']"),
@@ -55,7 +55,7 @@ export default function initApp() {
     setUserSettings();
 
     // initial duration
-    if (GlobalConfig.states.currentOptionType === OPTION_TYPE.isFocusOn) {
+    if (GlobalConfig.states.currentOptionType === OptionType.isFocusOn) {
       GlobalConfig.duration = UserInput.focusDuration * GlobalConfig.SECONDS;
     }
 
@@ -135,8 +135,8 @@ export default function initApp() {
         GlobalConfig.totalDuration = duration;
       }
 
-      if (GlobalConfig.states.currentTimerStatus !== TIMER.isRunning) {
-        GlobalConfig.states.currentTimerStatus = TIMER.isRunning
+      if (GlobalConfig.states.currentTimerStatus !== Timer.isRunning) {
+        GlobalConfig.states.currentTimerStatus = Timer.isRunning
         countdown(duration, clockDisplay!);
         updateStartButton('pause', startButton, true)
       }
@@ -144,8 +144,8 @@ export default function initApp() {
 
     // function to pause countdown
     function pauseTime(): void {
-      if (GlobalConfig.states.currentTimerStatus === TIMER.isRunning) {
-        GlobalConfig.states.currentTimerStatus = TIMER.isPaused;
+      if (GlobalConfig.states.currentTimerStatus === Timer.isRunning) {
+        GlobalConfig.states.currentTimerStatus = Timer.isPaused;
         clearInterval(GlobalConfig.timerInterval);
         updateStartButton('start', startButton, false)
       }
@@ -153,15 +153,15 @@ export default function initApp() {
 
     // function to resume countdown using remaining duration in global configuration
     function resumeTime(duration: number): void {
-      if (GlobalConfig.states.currentTimerStatus !== TIMER.isRunning) {
+      if (GlobalConfig.states.currentTimerStatus !== Timer.isRunning) {
         startTime(duration)
       }
     }
 
     // function for stopping the app and resetting
     function stopTime(): void {
-      if (GlobalConfig.states.currentTimerStatus !== TIMER.isStopped) {
-        GlobalConfig.states.currentTimerStatus = TIMER.isStopped;
+      if (GlobalConfig.states.currentTimerStatus !== Timer.isStopped) {
+        GlobalConfig.states.currentTimerStatus = Timer.isStopped;
         clearInterval(GlobalConfig.timerInterval)
         resetTime();
         updateStartButton('start', startButton, false)
@@ -196,7 +196,7 @@ export default function initApp() {
 
     // update message to focus or take a break
     function updateMessage(option: string): string {
-      if (option !== OPTION_TYPE.isFocusOn) {
+      if (option !== OptionType.isFocusOn) {
         return `Time to take a ${option.split('-')[0]} break.`
       } else {
         return `Time to ${option.split('-')[0]}!`
@@ -225,7 +225,7 @@ export default function initApp() {
           return;
         } else {
           // always stop the timer during different selection
-          if (GlobalConfig.states.currentTimerStatus !== TIMER.isStopped) {
+          if (GlobalConfig.states.currentTimerStatus !== Timer.isStopped) {
             stopTime();
           }
 
@@ -233,14 +233,14 @@ export default function initApp() {
           updateButtonSelectedState(element);
 
           switch (GlobalConfig.currentSelected!.value) {
-            case OPTION_TYPE.isFocusOn:
-              GlobalConfig.states.currentOptionType = OPTION_TYPE.isFocusOn
+            case OptionType.isFocusOn:
+              GlobalConfig.states.currentOptionType = OptionType.isFocusOn
               break;
-            case OPTION_TYPE.isShortBreak:
-              GlobalConfig.states.currentOptionType = OPTION_TYPE.isShortBreak
+            case OptionType.isShortBreak:
+              GlobalConfig.states.currentOptionType = OptionType.isShortBreak
               break;
-            case OPTION_TYPE.isLongBreak:
-              GlobalConfig.states.currentOptionType = OPTION_TYPE.isLongBreak
+            case OptionType.isLongBreak:
+              GlobalConfig.states.currentOptionType = OptionType.isLongBreak
               break;
           }
 
@@ -251,8 +251,8 @@ export default function initApp() {
           let inputValue = parseInt(inputCounterPart?.value ?? '0')
           let defaultValue: number;
 
-          if (inputName !== OPTION_TYPE.isFocusOn.split('-')[0]) {
-            defaultValue = inputName === OPTION_TYPE.isLongBreak.split('-')[0] ? UserInput.longBreakDuration : UserInput.shortBreakDuration;
+          if (inputName !== OptionType.isFocusOn.split('-')[0]) {
+            defaultValue = inputName === OptionType.isLongBreak.split('-')[0] ? UserInput.longBreakDuration : UserInput.shortBreakDuration;
           } else {
             defaultValue = UserInput.focusDuration;
           }
@@ -268,7 +268,7 @@ export default function initApp() {
     function autoStartOption(): void {
       timerBar.style.width = '0%';
 
-      if (GlobalConfig.states.currentOptionType === OPTION_TYPE.isFocusOn) {
+      if (GlobalConfig.states.currentOptionType === OptionType.isFocusOn) {
         GlobalConfig.count += 1;
         GlobalConfig.totalCount += 1;
         if (GlobalConfig.count >= GlobalConfig.maxCount) {
@@ -277,7 +277,7 @@ export default function initApp() {
           const longBreakButton = getRequiredElement<HTMLButtonElement>('button[value=long-break]');
           updateOptionButton(longBreakButton);
 
-          GlobalConfig.states.currentOptionType = OPTION_TYPE.isLongBreak;
+          GlobalConfig.states.currentOptionType = OptionType.isLongBreak;
           udpateAppBackground(GlobalConfig.states.currentOptionType);
 
           GlobalConfig.duration = UserInput.longBreakDuration * GlobalConfig.SECONDS;
@@ -286,7 +286,7 @@ export default function initApp() {
           const shortBreakButton = getRequiredElement<HTMLButtonElement>('button[value=short-break]');
           updateOptionButton(shortBreakButton);
 
-          GlobalConfig.states.currentOptionType = OPTION_TYPE.isShortBreak;
+          GlobalConfig.states.currentOptionType = OptionType.isShortBreak;
           udpateAppBackground(GlobalConfig.states.currentOptionType);
 
           GlobalConfig.duration = UserInput.shortBreakDuration * GlobalConfig.SECONDS;
@@ -297,7 +297,7 @@ export default function initApp() {
         const focusButton = getRequiredElement<HTMLButtonElement>('button[value=focus-on]');
         updateOptionButton(focusButton);
 
-        GlobalConfig.states.currentOptionType = OPTION_TYPE.isFocusOn;
+        GlobalConfig.states.currentOptionType = OptionType.isFocusOn;
         udpateAppBackground(GlobalConfig.states.currentOptionType)
 
         GlobalConfig.duration = UserInput.focusDuration * GlobalConfig.SECONDS;
@@ -343,15 +343,15 @@ export default function initApp() {
 
     // custom notification
     function showNotification(type:
-      OPTION_TYPE.isFocusOn |
-      OPTION_TYPE.isShortBreak |
-      OPTION_TYPE.isLongBreak
+      OptionType.isFocusOn |
+      OptionType.isShortBreak |
+      OptionType.isLongBreak
     ) {
       if (Notification.permission === 'granted') {
         let notificationTitle = '';
         let notificationBody = '';
 
-        if (type === OPTION_TYPE.isFocusOn) {
+        if (type === OptionType.isFocusOn) {
           notificationTitle = 'Time for a break.';
           notificationBody = (GlobalConfig.count >= (GlobalConfig.maxCount - 1)) ?
             "It's time for a long break." :
@@ -453,7 +453,7 @@ export default function initApp() {
         inputLongBreak.value = String(UserInput.longBreakDuration);
         inputInterval.value = String(UserInput.interval);
 
-        if (GlobalConfig.states.currentOptionType === OPTION_TYPE.isFocusOn) {
+        if (GlobalConfig.states.currentOptionType === OptionType.isFocusOn) {
           GlobalConfig.duration = UserInput.focusDuration * GlobalConfig.SECONDS;
         }
 
@@ -499,13 +499,13 @@ export default function initApp() {
         let defaultValue = parseInt(element.dataset.value!)
 
         switch (element.name) {
-          case OPTION_TYPE.isFocusOn:
+          case OptionType.isFocusOn:
             UserInput.focusDuration = (inputValue || defaultValue);
             break;
-          case OPTION_TYPE.isLongBreak:
+          case OptionType.isLongBreak:
             UserInput.longBreakDuration = (inputValue || defaultValue);
             break;
-          case OPTION_TYPE.isShortBreak:
+          case OptionType.isShortBreak:
             UserInput.shortBreakDuration = (inputValue || defaultValue);
             break;
           case 'interval':
@@ -515,7 +515,7 @@ export default function initApp() {
         }
 
         if (element.name === GlobalConfig.states.currentOptionType) {
-          if (GlobalConfig.states.currentTimerStatus !== TIMER.isStopped) {
+          if (GlobalConfig.states.currentTimerStatus !== Timer.isStopped) {
             stopTime();
             resetTime();
             // let elapsedTime = GlobalConfig.totalDuration - GlobalConfig.remainingDuration;
@@ -523,13 +523,13 @@ export default function initApp() {
           }
 
           switch (element.name) {
-            case OPTION_TYPE.isFocusOn:
+            case OptionType.isFocusOn:
               GlobalConfig.duration = UserInput.focusDuration * GlobalConfig.SECONDS;
               break;
-            case OPTION_TYPE.isShortBreak:
+            case OptionType.isShortBreak:
               GlobalConfig.duration = UserInput.shortBreakDuration * GlobalConfig.SECONDS;
               break;
-            case OPTION_TYPE.isLongBreak:
+            case OptionType.isLongBreak:
               GlobalConfig.duration = UserInput.longBreakDuration * GlobalConfig.SECONDS;
               break;
           }
@@ -542,16 +542,16 @@ export default function initApp() {
     // start button handle
     function handleStart(): void {
       switch (GlobalConfig.states.currentTimerStatus) {
-        case TIMER.isStopped:
+        case Timer.isStopped:
           startTime(GlobalConfig.duration);
           if (Notification.permission !== 'granted') {
             requestNotificationPermission();
           }
           break;
-        case TIMER.isPaused:
+        case Timer.isPaused:
           resumeTime(GlobalConfig.remainingDuration)
           break;
-        case TIMER.isRunning:
+        case Timer.isRunning:
           pauseTime();
           break;
       }
